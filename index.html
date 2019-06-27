@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Calculator</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/68c2d1294a.js"></script>
+    <link rel="stylesheet" href="css/styles.min.css">
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <input id="area" readonly></input>
+        <div id="calculator">
+            <button onclick="insert('%')"><i class="fas fa-percentage"></i></button>
+            <button onclick="insert('√')"><i class="fas fa-square-root-alt"></i></button>
+            <button onclick="insert('^')">^</button>
+            <button onclick="insert('/')"><i class="fas fa-divide"></i></button>
+            <button onclick="insert('*')"><i class="fas fa-times"></i></button>
+            <button onclick="insert('-')"><i class="fas fa-minus"></i></button>
+            <button onclick="insert('+')" id="plus"><i class="fas fa-plus"></i></button>
+            <button onclick="back()"><i class="fas fa-long-arrow-alt-left"></i></button>
+            <button onclick="insert(1)">1</button>
+            <button onclick="insert(2)">2</button>
+            <button onclick="insert(3)">3</button>
+            <button onclick="clean()">C</button>
+            <button onclick="insert(4)">4</button>
+            <button onclick="insert(5)">5</button>
+            <button onclick="insert(6)">6</button>
+            <button onclick="AC()">AC</button>
+            <button onclick="insert(7)">7</button>
+            <button onclick="insert(8)">8</button>
+            <button onclick="insert(9)">9</button>
+            <button id="dot" onclick="insert('.')"><i class="fas fa-circle"></i></button>
+            <button onclick="insert('(')">(</button>
+            <button onclick="insert(0)">0</button>
+            <button onclick="insert(')')">)</button>
+            <button onclick="result()"><i class="fas fa-equals"></i></button>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+
+</html>
