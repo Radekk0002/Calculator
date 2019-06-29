@@ -8,6 +8,7 @@ input.value = "0";
 paste = (e) => {
     const clipboardData = e.clipboardData || e.originalEvent.clipboardData || window.clipboardData;
     const pastedData = clipboardData.getData('text');
+    input.value = ""
     try {
         if (/[a-zA-Z]/g.test(pastedData)) {
             setTimeout(() => {
@@ -27,17 +28,22 @@ press = (e) => {
 
     const figure = String.fromCharCode(e.keyCode);
     if (!figure.match(/[.\d]/) && e.keyCode !== 8) return e.preventDefault();
+    
+    // Check if user can type number ( Example " Invalid input data " then remove value from input )
+    try{
+        eval(input.value)
+        getNumber()
+        // Check dots
+        if (figure === ".") {
+            const countDots = number.length - number.replace(/[.]/g, "").length
 
-    getNumber()
+            if (countDots > 0 && figure === ".") return e.preventDefault();
 
-    // Check dots
-    if (figure === ".") {
-        const countDots = number.length - number.replace(/[.]/g, "").length
-
-        if (countDots > 0 && figure === ".") return e.preventDefault();
-
-    }
-    getAllChars()
+        }
+        getAllChars()
+    }catch(_) {
+        input.value = ""
+    }   
 }
 
 let signs = [];
@@ -240,6 +246,7 @@ AC = () => {
     ecen = [];
     dots = [];
     input.value = "0"
+    prevInput.value = ""
     getNumber()
 }
 
@@ -378,7 +385,7 @@ result = () => {
             const result = (eval(input.value) ? eval(input.value) : "0")
             AC()
             if (!/[a-zA-Z]/g.test(input.value)) {
-                createHistory(value)
+                createHistory(value, result)
                 prevInput.value = value
             }
             input.value = result
@@ -401,12 +408,12 @@ showHistory = () => {
     historyBox.classList.toggle("active")
 }
 
-createHistory = (operation) => {
+createHistory = (operation, result) => {
     const div = document.createElement("div")
     div.classList.add("history")
     const operationField = document.createElement("p")
     operationField.classList.add("historyOperation")
-    operationField.innerHTML = operation
+    operationField.innerHTML = operation + " = " + result
 
     div.appendChild(operationField)
 
@@ -415,7 +422,13 @@ createHistory = (operation) => {
 const history = document.querySelector(".history")
 document.addEventListener("click", (e) => {
     if (e.target && (e.target.classList[0] === ("history") || e.target.classList[0] === ("historyOperation"))) {
-        input.value = e.target.innerText
+        let histValue = e.target.innerText;
+        histValue = histValue.replace(/\s/g, "")
+        
+        prevInput.value = histValue.substring(0, histValue.indexOf("="));
+        
+        histValue = histValue.substring(histValue.indexOf("=") + 1);
+        input.value = histValue
         showHistory()
     } else if (e.target && e.target.id !== "undo") {
         historyBox.classList.remove("active")

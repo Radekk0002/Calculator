@@ -16,7 +16,7 @@
         <i id="undo" class="fas fa-undo" onClick="showHistory()"></i>
 
         <input id="prevOperation" readonly></input>
-        <input id="area" onkeypress="press(event)" onpaste="paste(event)"></input>
+        <input id="area" onClick="clear()" onkeypress="press(event)" onpaste="paste(event)"></input>
         <div id="calculator">
             <button onclick="insert('%')"><i class="fas fa-percentage"></i></button>
             <button onclick="insert('√')"><i class="fas fa-square-root-alt"></i></button>
