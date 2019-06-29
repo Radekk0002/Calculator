@@ -12,9 +12,11 @@
 </head>
 
 <body>
-
     <div id="wrapper">
-        <input id="area" readonly></input>
+        <i id="undo" class="fas fa-undo" onClick="showHistory()"></i>
+
+        <input id="prevOperation" readonly></input>
+        <input id="area" onkeypress="press(event)" onpaste="paste(event)"></input>
         <div id="calculator">
             <button onclick="insert('%')"><i class="fas fa-percentage"></i></button>
             <button onclick="insert('√')"><i class="fas fa-square-root-alt"></i></button>
@@ -24,22 +26,24 @@
             <button onclick="insert('-')"><i class="fas fa-minus"></i></button>
             <button onclick="insert('+')" id="plus"><i class="fas fa-plus"></i></button>
             <button onclick="back()"><i class="fas fa-long-arrow-alt-left"></i></button>
-            <button onclick="insert(1)">1</button>
-            <button onclick="insert(2)">2</button>
-            <button onclick="insert(3)">3</button>
+            <button class="digit" onclick="insert(1)">1</button>
+            <button class="digit" onclick="insert(2)">2</button>
+            <button class="digit" onclick="insert(3)">3</button>
             <button onclick="clean()">C</button>
-            <button onclick="insert(4)">4</button>
-            <button onclick="insert(5)">5</button>
-            <button onclick="insert(6)">6</button>
+            <button class="digit" onclick="insert(4)">4</button>
+            <button class="digit" onclick="insert(5)">5</button>
+            <button class="digit" onclick="insert(6)">6</button>
             <button onclick="AC()">AC</button>
-            <button onclick="insert(7)">7</button>
-            <button onclick="insert(8)">8</button>
-            <button onclick="insert(9)">9</button>
+            <button class="digit" onclick="insert(7)">7</button>
+            <button class="digit" onclick="insert(8)">8</button>
+            <button class="digit" onclick="insert(9)">9</button>
             <button id="dot" onclick="insert('.')"><i class="fas fa-circle"></i></button>
             <button onclick="insert('(')">(</button>
-            <button onclick="insert(0)">0</button>
+            <button class="digit" onclick="insert(0)">0</button>
             <button onclick="insert(')')">)</button>
-            <button onclick="result()"><i class="fas fa-equals"></i></button>
+            <button class="result" onclick="result()"><i class="fas fa-equals"></i></button>
+            <div id="historyBox">
+            </div>
         </div>
     </div>
     <script src="main.js"></script>

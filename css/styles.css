@@ -13,14 +13,13 @@ html, body {
 
 #wrapper {
   width: 90%;
-  max-width: 320px;
+  max-width: 335px;
   height: 500px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #2a324b;
-  border: 1px solid #f7c59f;
+  background-color: #2d2d2d;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -36,15 +35,79 @@ html, body {
   align-items: center;
 }
 
-#area {
+#undo {
+  align-self: flex-end;
+  margin: 10px 10px 0;
+  font-size: 18px;
+  color: #e5e4e2;
+  cursor: pointer;
+}
+
+#historyBox {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(90% - 3px);
+  height: 355px;
+  margin: auto;
+  background: white;
+  max-height: 15%;
+  opacity: 0;
+  overflow-y: auto;
+  background: #141414;
+  color: #e5e4e2;
+  z-index: -1;
+  transition: all .5s linear;
+  will-change: max-height, opacity;
+}
+
+#historyBox.active {
+  opacity: 1;
+  max-height: 100%;
+  z-index: 10;
+}
+
+.history {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px;
+  border-bottom: 1px solid #828282;
+  cursor: pointer;
+}
+
+.history:hover {
+  background-color: #828282;
+}
+
+.history > p {
+  word-wrap: break-word;
+}
+
+#area, #prevOperation {
   width: 90%;
-  height: 50px;
-  margin: 20px auto;
+  height: 45px;
   padding: 0 10px;
-  background-color: #c7ccdb;
+  background-color: transparent;
+  border: none;
+  color: #e5e4e2;
   text-align: right;
-  line-height: 50px;
-  font-size: 30px;
+  line-height: 45px;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+#area {
+  border-top: none;
+  margin-bottom: 5px;
+}
+
+#prevOperation {
+  height: 25px;
+  line-height: 25px;
+  font-size: 18px;
+  border-top: 1px solid #828282;
+  margin-top: 20px;
 }
 
 #calculator {
@@ -65,12 +128,26 @@ html, body {
 }
 
 button {
-  width: calc(25% - 10px);
-  margin: 5px;
-  background-color: #e1e5ee;
+  width: calc(25% - 4px);
+  margin: 2px;
+  background-color: #828282;
+  border: none;
   font-size: 18px;
   font-weight: 600;
+  color: #e5e4e2;
   cursor: pointer;
+}
+
+button:hover {
+  background-color: #acacac;
+}
+
+.digit {
+  background-color: #1a1a1a;
+}
+
+.result {
+  background-color: #494949;
 }
 
 #dot {
@@ -79,4 +156,12 @@ button {
 
 #dot i {
   margin-top: 15px;
+}
+
+@media (max-height: 500px) {
+  #wrapper {
+    position: static;
+    transform: translate(0%, 0%);
+    margin: 20px auto;
+  }
 }

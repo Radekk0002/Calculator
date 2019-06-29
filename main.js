@@ -1,8 +1,44 @@
 const input = document.getElementById("area")
+const prevInput = document.getElementById("prevOperation")
 
-input.value = "";
+prevInput.value = ""
+input.value = "0";
 
-// let figure;
+// Check if user is pasting valid data
+paste = (e) => {
+    const clipboardData = e.clipboardData || e.originalEvent.clipboardData || window.clipboardData;
+    const pastedData = clipboardData.getData('text');
+    try {
+        if (/[a-zA-Z]/g.test(pastedData)) {
+            setTimeout(() => {
+                input.value = "Invalid input data"
+            }, 1)
+            return
+        }
+        eval(pastedData)
+    } catch (err) {
+        setTimeout(() => {
+            input.value = "Invalid input data"
+        }, 1)
+    }
+}
+
+press = (e) => {
+
+    const figure = String.fromCharCode(e.keyCode);
+    if (!figure.match(/[.\d]/) && e.keyCode !== 8) return e.preventDefault();
+
+    getNumber()
+
+    // Check dots
+    if (figure === ".") {
+        const countDots = number.length - number.replace(/[.]/g, "").length
+
+        if (countDots > 0 && figure === ".") return e.preventDefault();
+
+    }
+    getAllChars()
+}
 
 let signs = [];
 
@@ -11,131 +47,377 @@ let ecen = []
 
 let dots = []
 
+let bracketsOpen = [];
+let bracketsClose = [];
+
 let number = ""
 
-insert = (figure) =>{
-    // figure;
-    // var number;
-    // var Sign;
-    // var sign;
-    // Sign = figure
-    // number = NaN;
-    // sign = "";
-    const signReg = /[(.)√]/;
-    if (isNaN(figure) && !figure.match(signReg)) {
-        const sign = {
-            sign: figure,
-            place: input.value.length
-        }
-        signs.push(sign)
-    } 
-    if (isNaN(figure) && figure !== ".") {
-        console.log("object")
-        const sign = {
-            sign: figure,
-            place: input.value.length
-        }
-        ecen.push(sign)
-    }
-
-    if(figure === "."){
-        const dot = {
-            place: input.value.length
-        }
-        dots.push(dot)
-    }
-    console.log(ecen)
-    console.log(figure)
-    // else {
-    //     number = figure;
-    // }
-    if(validation(signs, figure)) {
+insert = (figure) => {
+    if (input.value === "0" && (!isNaN(figure) || figure === "(" || figure === "√") || /[a-zA-Z]/g.test(input.value)) input.value = figure
+    else {
         input.value += figure;
-        getNumber()
-    }
-    
-    console.log(number)
-
-        
-}
-
-getNumber = () =>{
-    // if (!isNaN(figure) || figure === ".") {
-        const value = input.value;
-        const ecenLength = ecen.length
-        const lastEcen = (ecen[ecenLength - 1] ? ecen[ecenLength - 1].place : -1);
-
-        number = value.slice(lastEcen+1)
-
-        // If first char in number is dot then place 0 before dot ( .98 => 0.98 )
-        if (number[0] === ".") input.value = value.slice(0, value.length-1) + "0" + value.slice(value.length-1)
-        console.log(number)
-        
-    // }
-}
-
-back = () =>{
-    const value = input.value;
-    const valueLength = value.length;
-    const signsLength = signs.length;
-    const ecenLength = ecen.length
-    input.value = value.substring(0, valueLength-1);
-
-    //If last char is a sign
-    if (signs[signsLength - 1] !== undefined && valueLength - 1 === signs[signsLength - 1].place) {
-        signs.pop()
-        if (signs[signsLength - 1] !== undefined && signs[signsLength - 1].sign === ".") dots.pop()
-        
     }
 
-    if (ecen[ecenLength - 1] !== undefined && valueLength - 1 === ecen[ecenLength - 1].place) {
-        ecen.pop()
-    }
+    getAllChars()
 
     getNumber()
-    console.log(signs)
+    validation(signs, figure)
+
+    input.scrollLeft = input.scrollWidth;
+
 }
 
-clean = ()=>{
+// Get all figures except numbers
+getAllChars = () => {
     signs = [];
-    ecen = [];
-    dots = [];
-    input.value = ""
-}
+    ecen = []
+    dots = []
+    bracketsOpen = [];
+    bracketsClose = [];
+    let i;
 
-AC = () =>{
-    signs = [];
-    ecen = [];
-    dots = [];
-    input.value = ""
+    const value = input.value;
+    const signReg = /[().√]/;
+    for (i = 0; i < value.length; i++) {
+        const figure = value[i];
+        if (isNaN(figure) && !figure.match(signReg)) {
+            const sign = {
+                sign: figure,
+                place: i
+            }
+            signs.push(sign)
+        }
+        if (isNaN(figure) && figure !== ".") {
+            const sign = {
+                sign: figure,
+                place: i
+            }
+            ecen.push(sign)
+
+            // Brackets
+            if (figure.match(/[()]/)) {
+                if (figure === "(") {
+                    const sign = {
+                        sign: figure,
+                        place: i
+                    }
+                    bracketsOpen.push(sign)
+                } else {
+                    const sign = {
+                        sign: figure,
+                        place: i
+                    }
+                    bracketsClose.push(sign)
+                }
+            }
+        }
+        if (figure === ".") {
+
+            const dot = {
+                place: i
+            }
+            dots.push(dot)
+        }
+    }
 }
 
 //VALIDATION
 
-validation = (signs, figure)=>{
-    // for(el in signs){
-        const signsLength = signs.length
-        const lastSign = (signs[signsLength - 1] ? signs[signsLength - 1].place : 0);
-        let nextToLastSign = -2;
-        if(signsLength > 1) nextToLastSign = signs[(signsLength - 2)].place;
-        
-        console.log(lastSign, nextToLastSign, signs)
-        if (lastSign === nextToLastSign + 1) {
-            signs.pop()
-            return false
+validation = (signs, figure) => {
+    const value = input.value
+    const signsLength = signs.length
+    const lastSign = (signs[signsLength - 1] ? signs[signsLength - 1].place : 0);
+    const bracketOpen = (bracketsOpen[bracketsOpen.length - 1] ? bracketsOpen[bracketsOpen.length - 1].place : -2);
+    const nextToLastSign = (signs[(signsLength - 2)] ? signs[(signsLength - 2)].place : -2)
+
+    // Example "  ++  " then "  +  "
+    if (lastSign === nextToLastSign + 1 || lastSign === bracketOpen + 1) {
+        return back()
+    }
+
+    checkDots(figure)
+
+    // Example "  *  " then "  0*  "
+    if (/[+/%^*-]/.test(figure) && value.length === 1) {
+        input.value = "0" + figure
+    } else if (/[\d()√]/.test(figure)) {
+
+        const bracketsOpenLength = bracketsOpen.length;
+        const bracketsCloseLength = bracketsClose.length
+
+        // Example "  8(  " then "  8*(  "
+        if ((figure === "(" && (!isNaN(value[value.length - 2]) && value[value.length - 2] != ".")) ||
+            (figure === "(" && value[value.length - 2] === ")") ||
+            (!isNaN(figure) && value[value.length - 2] === ")")
+        ) {
+            input.value = input.value.slice(0, value.length - 1) + "*" + figure
+
+
+        }
+        // Example "  0.(  " then "  0.0*(  "
+        else if (figure === "(" && (value[value.length - 2] === "." || value[value.length - 2] === "√")) {
+            input.value = input.value.slice(0, value.length - 1) + "0*" + figure
+        }
+        // Example "  0.)  " then "  0.0)  "
+        else if (figure === ")" && (value[value.length - 2] === "." || value[value.length - 2] === "(" || value[value.length - 2] === "√")) {
+            input.value = input.value.slice(0, value.length - 1) + "0" + figure
+        }
+        // Example "  )  " then "  (0)  "
+        else if (figure === ")" && value[0] === undefined) {
+            input.value = input.value.slice(0, value.length - 1) + "(0" + figure
+        }
+        // Example "  )  " then "  (0)  "
+        if (figure === ")" && bracketsCloseLength > bracketsOpenLength) {
+
+            if (value.length === 1) input.value = "0" + input.value
+
+            input.value = "(" + input.value
+
         }
 
-        // Check Dots
-        const countDots = number.length - number.replace(/[.]/g, "").length
-        console.log(countDots, dots)
-        if (countDots > 0 && figure === ".") {
-            dots.pop()
-            return false
+    } // Example "  √+  " then "  √  "
+    if (!/[\d().√]/.test(figure) && value[value.length - 2] === "√") {
+        input.value = value.substring(0, value.length - 1);
+
+
+
+    }
+    // Example "  5√  " then "  5*√  "
+    if (/[\d).]/.test(value[value.length - 2]) && figure === "√") {
+
+        if (value[value.length - 2] === ".") {
+
+            input.value = input.value.slice(0, value.length - 1) + "0*" + figure
+
+        } else {
+            input.value = input.value.slice(0, value.length - 1) + "*" + figure
         }
-    // }
-    return true
+    }
+
+    // Example "  ).  " then "  )*0.  "
+    if ((figure === "." && value[value.length - 3] === ")")) {
+        input.value = input.value.slice(0, value.length - 2) + "*" +
+            input.value.slice(value.length - 2)
+    }
 }
 
-result = () =>{
-    input.value = eval(input.value)
+getNumber = () => {
+
+    const value = input.value;
+
+    const ecenLength = ecen.length
+    const lastEcen = (ecen[ecenLength - 1] ? ecen[ecenLength - 1].place : -1);
+
+    number = value.slice(lastEcen + 1)
+
+    // If first char in number is dot then place 0 before dot ( .98 => 0.98 )
+    if (number[0] === ".") input.value = value.slice(0, value.length - 1) + "0" + value.slice(value.length - 1)
+
 }
+
+back = () => {
+    const value = input.value;
+    const valueLength = value.length;
+    const nan = isNaN(value[value.length - 1])
+    input.value = value.substring(0, valueLength - 1);
+
+    if (nan) getAllChars()
+
+    getNumber()
+
+}
+
+clean = () => {
+    signs = [];
+    ecen = [];
+    dots = [];
+    input.value = "0"
+    getNumber()
+}
+
+AC = () => {
+    signs = [];
+    ecen = [];
+    dots = [];
+    input.value = "0"
+    getNumber()
+}
+
+
+// Brackets Validation
+
+bracketsValid = () => {
+    // Example " (((((990) " then " (((((990))))) "
+    const value = input.value
+    if (bracketsOpen.length > bracketsClose.length) {
+        const count = bracketsOpen.length - bracketsClose.length
+        if (value[value.length - 1] === "(") input.value = value + "0"
+        input.value = input.value + ")".repeat(count)
+    }
+    // Example " (990))))) " then " (((((990))))) "
+    else if (bracketsOpen.length < bracketsClose.length) {
+        const count = bracketsClose.length - bracketsOpen.length
+        input.value = "(".repeat(count) + value
+    }
+}
+
+checkDots = (figure) => {
+    // Check Dots
+    const countDots = number.length - number.replace(/[.]/g, "").length
+
+    if (countDots > 1 && figure === ".") {
+        return back()
+    }
+}
+
+let num = "";
+
+result = () => {
+    let check = 1;
+    let value = input.value;
+    getAllChars()
+    bracketsValid()
+
+    // Example " 0+ " then " 0 "
+    if (!/[\d√())]/.test(value[value.length - 1])) input.value = value.substring(0, value.length - 1)
+
+    // Example " √√√√√√ " then " √√√√√√0 "
+    if (value[value.length - 1] === "√") input.value = value + "0"
+
+    value = input.value;
+    let operation = "";
+    let openBrackets = 0;
+    let closeBrackets = 0;
+
+    // Conversion to mathematical operation
+    for (let i = 0; i <= input.value.length - 1; i++) {
+
+        // Conversion percentage cahr
+        if (input.value[i] === "%") {
+            input.value = input.value.split("%").join("*1/100*");
+        }
+        // Conversion power char
+        else if (input.value[i] === "^") {
+            input.value = input.value.split("^").join("**");
+        }
+
+        // Conversion root char
+        else if (input.value[i] === "√") {
+            let value = input.value;
+            let count = 0;
+            let slicedValueFrom = value.slice(0, i)
+            let leftValue;
+            let numbers = ""
+
+            for (let x = i; x < input.value.length; x++) {
+
+                if (input.value[x] === "√") {
+                    count++
+                } else if (input.value[x] !== "√" && (!isNaN(input.value[x]) || input.value[x] === ".")) {
+
+                    value = input.value.slice(i, x).replace(/[√]/g, "Math.sqrt(")
+
+                    for (let z = x; z <= input.value.length; z++) {
+                        if (isNaN(input.value[z]) && input.value[z] != ".") {
+
+                            leftValue = input.value.slice(z)
+                            break;
+                        }
+                        numbers = input.value.slice(x, z + 1)
+                        putBrackets = input.value.slice(x, z + 1)
+                    }
+
+                    input.value = slicedValueFrom + value + numbers + ")".repeat(count) + leftValue
+                    break;
+                }
+            }
+            count = 0;
+        }
+    }
+
+    for (let i = 0; i <= input.value.length - 1; i++) {
+
+        // Checking if user is dividing by 0
+        if (input.value[i] === "/") {
+            operation = ""
+            if (input.value[i + 1] === "(") {
+                openBrackets = 1;
+                operation = "("
+                closeBrackets = 0;
+                for (let x = i + 2; x <= input.value.length - 1; x++) {
+
+                    if (input.value[x] === "(") openBrackets++
+                    else if (input.value[x] === ")") closeBrackets++
+
+                    operation += input.value[x]
+                    if (openBrackets === closeBrackets) break;
+                }
+
+            } else if (input.value[i + 1] === "0") {
+                operation = 0
+            }
+            try {
+                check = eval(operation)
+                if (check === 0) {
+                    if (!/[a-zA-Z]/g.test(input.value)) prevInput.value = value
+
+                    input.value = "Do not divide by zero!"
+                    break;
+                }
+            } catch (err) {
+                if (err) {
+                    if (!/[a-zA-Z]/g.test(input.value)) prevInput.value = value
+                    input.value = "Invalid input data"
+                }
+            }
+        }
+    }
+
+    if (check) {
+        try {
+            const result = (eval(input.value) ? eval(input.value) : "0")
+            AC()
+            if (!/[a-zA-Z]/g.test(input.value)) {
+                createHistory(value)
+                prevInput.value = value
+            }
+            input.value = result
+            getNumber()
+        } catch (err) {
+            if (err) {
+                if (!/[a-zA-Z]/g.test(input.value)) prevInput.value = value
+                input.value = "Invalid input data"
+            }
+        }
+    }
+}
+
+
+// History
+
+const historyBox = document.getElementById("historyBox")
+
+showHistory = () => {
+    historyBox.classList.toggle("active")
+}
+
+createHistory = (operation) => {
+    const div = document.createElement("div")
+    div.classList.add("history")
+    const operationField = document.createElement("p")
+    operationField.classList.add("historyOperation")
+    operationField.innerHTML = operation
+
+    div.appendChild(operationField)
+
+    historyBox.appendChild(div)
+}
+const history = document.querySelector(".history")
+document.addEventListener("click", (e) => {
+    if (e.target && (e.target.classList[0] === ("history") || e.target.classList[0] === ("historyOperation"))) {
+        input.value = e.target.innerText
+        showHistory()
+    } else if (e.target && e.target.id !== "undo") {
+        historyBox.classList.remove("active")
+    }
+})
