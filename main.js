@@ -1,3 +1,14 @@
+// Polyfill for repeat()
+String.prototype.repeat = function(count) {
+    if (count < 1) return '';
+    var result = '', pattern = this.valueOf();
+    while (count > 1) {
+        if (count & 1) result += pattern;
+        count >>= 1, pattern += pattern;
+    }
+    return result + pattern;
+};
+
 const input = document.getElementById("area")
 const prevInput = document.getElementById("prevOperation")
 
@@ -299,7 +310,7 @@ result = () => {
     // Conversion to mathematical operation
     for (let i = 0; i <= input.value.length - 1; i++) {
 
-        // Conversion percentage cahr
+        // Conversion percentage char
         if (input.value[i] === "%") {
             input.value = input.value.split("%").join("*1/100*");
         }
@@ -315,6 +326,7 @@ result = () => {
             let slicedValueFrom = value.slice(0, i)
             let leftValue;
             let numbers = ""
+            // let putBrackets;
 
             for (let x = i; x < input.value.length; x++) {
 
@@ -331,7 +343,6 @@ result = () => {
                             break;
                         }
                         numbers = input.value.slice(x, z + 1)
-                        putBrackets = input.value.slice(x, z + 1)
                     }
 
                     input.value = slicedValueFrom + value + numbers + ")".repeat(count) + leftValue
@@ -362,7 +373,7 @@ result = () => {
 
             } else if (input.value[i + 1] === "0") {
                 operation = 0
-            }
+            } else if(operation==="") operation="1"
             try {
                 check = eval(operation)
                 if (check === 0) {
@@ -388,6 +399,7 @@ result = () => {
                 createHistory(value, result)
                 prevInput.value = value
             }
+            
             input.value = result
             getNumber()
         } catch (err) {
@@ -410,18 +422,18 @@ showHistory = () => {
 
 createHistory = (operation, result) => {
     const div = document.createElement("div")
-    div.classList.add("history")
+    div.setAttribute("id", "history")
     const operationField = document.createElement("p")
-    operationField.classList.add("historyOperation")
+    operationField.setAttribute("id", "historyOperation")
     operationField.innerHTML = operation + " = " + result
 
     div.appendChild(operationField)
 
     historyBox.appendChild(div)
 }
-const history = document.querySelector(".history")
+
 document.addEventListener("click", (e) => {
-    if (e.target && (e.target.classList[0] === ("history") || e.target.classList[0] === ("historyOperation"))) {
+    if (e.target && (e.target.id === ("history") || e.target.id === ("historyOperation"))) {
         let histValue = e.target.innerText;
         histValue = histValue.replace(/\s/g, "")
         

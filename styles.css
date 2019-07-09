@@ -68,7 +68,7 @@ html, body {
   z-index: 10;
 }
 
-.history {
+#history {
   width: 100%;
   max-width: 100%;
   padding: 20px;
@@ -76,11 +76,11 @@ html, body {
   cursor: pointer;
 }
 
-.history:hover {
+#history:hover {
   background-color: #828282;
 }
 
-.history > p {
+#history > p {
   word-wrap: break-word;
 }
 
@@ -128,7 +128,7 @@ html, body {
 }
 
 button {
-  width: calc(25% - 4px);
+  width: calc(25% - 4.5px);
   margin: 2px;
   background-color: #828282;
   border: none;

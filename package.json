@@ -1,0 +1,25 @@
+{
+  "name": "calculator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel main.js -d build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Radekk0002/Calculator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Radekk0002/Calculator/issues"
+  },
+  "homepage": "https://github.com/Radekk0002/Calculator#readme"
+}
